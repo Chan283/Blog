@@ -1,0 +1,22 @@
+{%extends 'blog/base.html'%}
+
+{% block content %}
+<div class="centerstage">
+	{% for post in post_list %}	<!--post_list is model in small + _list-->
+		<div class="post">
+		
+		<!-- when clicked on post's title(i.e post.title), show post_detail page with pk= post's pk -->
+			<h1><a href = "{% url 'post_detail' pk=post.pk%}">{{post.title}}</a></h1>
+			
+			<div class="date">
+				<p>Published on: {{post.published_date|date:"d M Y"}}
+			</div>
+			
+			<!-- we are on post list page, and below the post we want to display comment count  -->
+			<!-- and when clicked on this count it should open the corresponding post details -->
+			<a href="{%url 'post_detail' pk=post.pk %}">Comments:{{post.approve_comments.count}}</a>
+			
+		</div>
+	{% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{%extends 'blog/base.html'%}
+
+{% block content %}
+<h1 class="posttitle loader">{{post.title}}</h1>
+{% if post.published_date %}		<!-- if the post is published --->
+	<div class="date postdate">
+	{{post.published_date}}
+	</div>
+{% else %}		<!-- if the post is NOT published,display the button to publish it --->
+	<a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+{% endif %}
+
+<!-- safe is used bcoz we dnt want that if txt is typed bold then it shouldnt be saved with bold tag, it should just be as it is -->
+<!-- linebreaksbr is used to store linebreaks as per user formatin...say in center alignment or as a poem -->
+<p class="postcontent">{{post.text|safe|linebreaksbr}}</p>
+
+{% if user.is_authenticated %}
+	<!-- to edit the post, display a pencil icon -->
+	<a class="btn btn-primary" href="{%url 'post_edit' pk=post.pk %}">
+		<span class="glyphicon glyphicon-pencil"></span>
+	</a>
+	
+	<!-- to remove the post, display a X icon -->
+	<a class="btn btn-primary" href="{%url 'post_remove' pk=post.pk %}">
+		<span class="glyphicon glyphicon-remove"></span>
+	</a>
+{% endif %}
+
+<hr>
+<!-- The add comment button -->
+<a class="btn btn-primary btn-comment" href="{%url 'add_comment_to_post' pk=post.pk %}">Add Comment</a>
+
+<!-- displaying list of comments -->
+
+<div class="container">
+{% for comment in post.comments.all %}
+	<br>
+	<!-- comment should be displayed only if user is authenticated or comment is approved -->
+	{% if user.is_authenticated or comment.approved_comment %}
+		{{comment.created_date}}
+		<!-- if comment is not approved we will give 2 btns, one to approve and 2nd to remove it -->
+		{%if not comment.approved_comment %}
+			<a class="btn btn-default" href="{%url 'comment_remove' pk=comment.pk %}">
+				<span class="glyphicon glyphicon-remove"></span>
+			</a>
+			<a class="btn btn-primary" href="{%url 'comment_approve' pk=comment.pk %}">
+				<span class="glyphicon glyphicon-ok"></span>
+			</a>
+		{% endif %}
+		
+		<p>{{comment.text|safe|linebreaks}}</p>
+		<p> Posted by: {{comment.author}}</p>
+	{% endif %}
+	{% empty %}	<!--if there are no comments display No comments yet -->
+		<p>No comments yet</p>
+{% endfor %}
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
